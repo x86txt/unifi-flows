@@ -37,11 +37,12 @@ This tool has been tested and verified to work on:
 - **Linux**: Ubuntu, Debian
 - **macOS**: x86, ARM64, Apple M-series
 
-## 🔄 Unifi Network Controller Compatibility
+## 🔄 Unifi Software Compatibility
 
-Tested and verified with the following Unifi Network Controller versions:
+Tested and verified with the following Unifi versions:
 
-- **9.1.118**
+- Network: **9.1.118**
+- UniFi OS: **4.2.8**
 
 > ℹ️ The tool may work with other versions, but these are the ones explicitly tested.
 
