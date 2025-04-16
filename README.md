@@ -1,9 +1,5 @@
 <h1 align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/ubiquiti-white.svg" width="30" height="30">
-    <source media="(prefers-color-scheme: light)" srcset="assets/ubiquiti-blue.svg" width="30" height="30">
-    <img alt="Ubiquiti Logo" src="assets/ubiquiti-blue.svg" width="30" height="30" style="vertical-align: middle; margin-right: 10px;">
-  </picture>
+  <img alt="Ubiquiti Logo" src="assets/ubiquiti-blue.svg" width="30" height="30" style="vertical-align: middle; margin-right: 10px;">
   Unifi insights Traffic Flows Exporter
 </h1>
 
