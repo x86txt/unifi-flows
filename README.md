@@ -8,9 +8,9 @@
 
 <p align="center">
   <a href="https://github.com/x86txt/unifi-flows/actions/workflows/njsscan.yml"><img src="https://github.com/x86txt/unifi-flows/actions/workflows/njsscan.yml/badge.svg" alt="sast scan"></a>
-  <a href="https://github.com/x86txt/unifi-flows/actions/workflows/node-build.yml"><img src="https://github.com/x86txt/unifi-flows/actions/workflows/node-build.yml/badge.svg" alt="Node.js Build"></a>
-  <a href="#platform-support"><img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey" alt="Platform Support"></a>
+  <a href="https://github.com/x86txt/unifi-flows/actions/workflows/node-build.yml"><img src="https://github.com/x86txt/unifi-flows/actions/workflows/node-build.yml/badge.svg" alt="node.js Build"></a>
   <a href="#prerequisites"><img src="https://img.shields.io/badge/node-22.x-brightgreen" alt="Node.js Version"></a>
+  <a href="#prerequisites"><img src="https://img.shields.io/badge/bun-1.9.x-orange" alt="Bun Version"></a>
 </p>
 
 This project will allow you to export the Traffic Flows (Blocked & Threats) from your Unifi Console to a CSV for ingestion into other platforms - your SIEM, MongoDB to visualize with Grafana, etc.
