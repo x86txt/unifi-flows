@@ -13,7 +13,10 @@
   <a href="#prerequisites"><img src="https://img.shields.io/badge/bun-1.9.x-orange" alt="Bun Version"></a>
 </p>
 
-This project will allow you to export the Traffic Flows (Blocked & Threats) from your Unifi Console to a CSV for ingestion into other platforms - your SIEM, MongoDB to visualize with Grafana, etc.
+This project will allow you to export the Traffic Flows (Blocked & Threats) from your Unifi Console either:
+
+1. to a CSV for ingestion into other platforms - i.e. your SIEM, MongoDB to visualize with Grafana, etc.
+2. Run in api-server mode and allow you to directly query against it, backed by an InfluxDB which has direct Grafana support (includes a dashboard with GeoIP enrichment!)
 
 ## ✨ Features
 
