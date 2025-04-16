@@ -1,6 +1,9 @@
+<p align="center">
+  <img alt="Ubiquiti Logo" src="assets/ubiquiti-blue.svg" width="80" height="80">
+</p>
+
 <h1 align="center">
-  <img alt="Ubiquiti Logo" src="assets/ubiquiti-blue.svg" width="30" height="30" style="vertical-align: middle; margin-right: 10px;">
-  Unifi insights Traffic Flows Exporter
+  Unifi Insights Traffic Flows Exporter
 </h1>
 
 This project will allow you to export the Traffic Flows (Blocked & Threats) from your Unifi Console to a CSV for ingestion into other platforms - your SIEM, MongoDB to visualize with Grafana, etc.
