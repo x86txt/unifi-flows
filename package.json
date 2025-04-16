@@ -1,0 +1,24 @@
+{
+  "name": "unifi-flows",
+  "version": "1.0.0",
+  "description": "Automated CSV downloader for Unifi Controller Flows data",
+  "main": "src/unifi-downloader.js",
+  "scripts": {
+    "start": "bun src/unifi-downloader.js",
+    "download": "bun src/unifi-downloader.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "unifi",
+    "automation",
+    "playwright",
+    "csv"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "playwright": "^1.40.0"
+  }
+}
