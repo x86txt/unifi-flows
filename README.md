@@ -42,8 +42,8 @@ This project will allow you to export the Traffic Flows (Blocked & Threats) from
 This tool has been tested and verified to work on:
 
 - **Windows**: Windows 10/11
-- **Linux**: Ubuntu, Debian, CentOS
-- **macOS**: Intel and Apple Silicon
+- **Linux**: Ubuntu, Debian
+- **macOS**: x86, ARM64, Apple M-series
 
 ## 🚀 Installation
 
