@@ -6,6 +6,12 @@
   Unifi Insights Traffic Flows Exporter
 </h1>
 
+<p align="center">
+  <a href="https://github.com/x86txt/unifi-flows/actions/workflows/njsscan.yml">
+    <img src="https://github.com/x86txt/unifi-flows/actions/workflows/njsscan.yml/badge.svg" alt="njsscan sarif">
+  </a>
+</p>
+
 This project will allow you to export the Traffic Flows (Blocked & Threats) from your Unifi Console to a CSV for ingestion into other platforms - your SIEM, MongoDB to visualize with Grafana, etc.
 
 ## ✨ Features
