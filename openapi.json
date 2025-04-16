@@ -1,0 +1,835 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Unifi Flows API",
+    "description": "API for querying network traffic flows and threats collected from Unifi Controllers",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Support",
+      "url": "https://github.com/yourusername/unifi-flows"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "Default API server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "System",
+      "description": "System operations"
+    },
+    {
+      "name": "Flows",
+      "description": "Network traffic flow operations"
+    },
+    {
+      "name": "Threats",
+      "description": "Threat detection operations"
+    },
+    {
+      "name": "Metrics",
+      "description": "Traffic metrics and statistics"
+    },
+    {
+      "name": "Import",
+      "description": "Data import operations"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "API key authentication"
+      }
+    },
+    "schemas": {
+      "Flow": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Flow timestamp"
+          },
+          "sourceIP": {
+            "type": "string",
+            "description": "Source IP address"
+          },
+          "sourcePort": {
+            "type": "integer",
+            "description": "Source port number"
+          },
+          "destinationIP": {
+            "type": "string",
+            "description": "Destination IP address"
+          },
+          "destinationPort": {
+            "type": "integer",
+            "description": "Destination port number"
+          },
+          "protocol": {
+            "type": "string",
+            "description": "Network protocol"
+          },
+          "application": {
+            "type": "string",
+            "description": "Application name"
+          },
+          "bytes": {
+            "type": "integer",
+            "description": "Number of bytes transferred"
+          },
+          "packets": {
+            "type": "integer",
+            "description": "Number of packets transferred"
+          },
+          "duration": {
+            "type": "number",
+            "description": "Flow duration in seconds"
+          },
+          "action": {
+            "type": "string",
+            "description": "Action taken on the flow"
+          },
+          "sourceCountry": {
+            "type": "string",
+            "description": "Source country code"
+          },
+          "destCountry": {
+            "type": "string",
+            "description": "Destination country code"
+          }
+        }
+      },
+      "Threat": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Threat detection timestamp"
+          },
+          "sourceIP": {
+            "type": "string",
+            "description": "Source IP address"
+          },
+          "destinationIP": {
+            "type": "string",
+            "description": "Destination IP address"
+          },
+          "protocol": {
+            "type": "string",
+            "description": "Network protocol"
+          },
+          "threatType": {
+            "type": "string",
+            "description": "Type of threat"
+          },
+          "threatCategory": {
+            "type": "string",
+            "description": "Category of threat"
+          },
+          "severity": {
+            "type": "string",
+            "description": "Threat severity"
+          },
+          "action": {
+            "type": "string",
+            "description": "Action taken on the threat"
+          }
+        }
+      },
+      "Status": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["ok", "error"],
+            "description": "System status"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Current server time"
+          },
+          "uptime": {
+            "type": "number",
+            "description": "Server uptime in seconds"
+          },
+          "apiVersion": {
+            "type": "string",
+            "description": "API version"
+          },
+          "lastImport": {
+            "type": "object",
+            "properties": {
+              "file": {
+                "type": "string",
+                "description": "Last imported file name"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Import timestamp"
+              },
+              "results": {
+                "type": "object",
+                "properties": {
+                  "total": {
+                    "type": "integer",
+                    "description": "Total records processed"
+                  },
+                  "imported": {
+                    "type": "integer",
+                    "description": "Number of records imported"
+                  },
+                  "errors": {
+                    "type": "integer",
+                    "description": "Number of errors during import"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ImportRequest": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Path to CSV file to import"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["flows", "threats"],
+            "default": "flows",
+            "description": "Type of data to import"
+          },
+          "directory": {
+            "type": "string",
+            "description": "Directory containing CSV files to import"
+          }
+        }
+      },
+      "MetricsResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "time": {
+              "type": "string",
+              "description": "Time period"
+            },
+            "count": {
+              "type": "integer",
+              "description": "Count value"
+            },
+            "bytes": {
+              "type": "integer",
+              "description": "Bytes value"
+            },
+            "megabytes": {
+              "type": "number",
+              "description": "Megabytes value"
+            },
+            "gigabytes": {
+              "type": "number",
+              "description": "Gigabytes value"
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Health check",
+        "description": "Simple health check endpoint",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "time": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/status": {
+      "get": {
+        "tags": ["System"],
+        "summary": "System status",
+        "description": "Get detailed system status",
+        "operationId": "getStatus",
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/flows": {
+      "get": {
+        "tags": ["Flows"],
+        "summary": "Get flows",
+        "description": "Get network traffic flows with optional filtering",
+        "operationId": "getFlows",
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of results to return",
+            "schema": {
+              "type": "integer",
+              "default": 100
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "Number of results to skip",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Field to sort by",
+            "schema": {
+              "type": "string",
+              "default": "timestamp"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort order",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc"
+            }
+          },
+          {
+            "name": "sourceIP",
+            "in": "query",
+            "description": "Filter by source IP",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "destinationIP",
+            "in": "query",
+            "description": "Filter by destination IP",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "protocol",
+            "in": "query",
+            "description": "Filter by protocol",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Filter by start date (ISO format)",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Filter by end date (ISO format)",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Flow"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/flows/{id}": {
+      "get": {
+        "tags": ["Flows"],
+        "summary": "Get flow by ID",
+        "description": "Get a specific flow by its ID",
+        "operationId": "getFlowById",
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Flow ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Flow"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Flow not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/threats": {
+      "get": {
+        "tags": ["Threats"],
+        "summary": "Get threats",
+        "description": "Get detected threats with optional filtering",
+        "operationId": "getThreats",
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of results to return",
+            "schema": {
+              "type": "integer",
+              "default": 100
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "Number of results to skip",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Field to sort by",
+            "schema": {
+              "type": "string",
+              "default": "timestamp"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort order",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc"
+            }
+          },
+          {
+            "name": "sourceIP",
+            "in": "query",
+            "description": "Filter by source IP",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "threatType",
+            "in": "query",
+            "description": "Filter by threat type",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Filter by start date (ISO format)",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Filter by end date (ISO format)",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Threat"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics/flows/count": {
+      "get": {
+        "tags": ["Metrics"],
+        "summary": "Flow count metrics",
+        "description": "Get flow count metrics over time",
+        "operationId": "getFlowCountMetrics",
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "Time interval for aggregation",
+            "schema": {
+              "type": "string",
+              "enum": ["hour", "day", "week"],
+              "default": "day"
+            }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "description": "Number of days to include",
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetricsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics/flows/volume": {
+      "get": {
+        "tags": ["Metrics"],
+        "summary": "Flow volume metrics",
+        "description": "Get traffic volume metrics over time",
+        "operationId": "getFlowVolumeMetrics",
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "Time interval for aggregation",
+            "schema": {
+              "type": "string",
+              "enum": ["hour", "day", "week"],
+              "default": "day"
+            }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "description": "Number of days to include",
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetricsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/import": {
+      "post": {
+        "tags": ["Import"],
+        "summary": "Import data",
+        "description": "Trigger import of data from CSV files",
+        "operationId": "importData",
+        "security": [{ "ApiKeyAuth": [] }],
+        "requestBody": {
+          "description": "Import options",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "result": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

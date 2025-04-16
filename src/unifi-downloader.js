@@ -10,6 +10,10 @@ const path = require("path");
 const fs = require("fs");
 require("dotenv").config();
 
+const importer = require("./import");
+// Check if direct import mode is enabled
+const directImportMode = importer.directImportMode;
+
 // Configuration
 const config = {
   // Replace these with your actual Unifi Controller credentials
@@ -163,31 +167,57 @@ async function downloadUnifiFlowsCsv() {
     const downloadPromise = page.waitForEvent("download");
 
     // Click the download button
-    try {
-      console.log("Clicking download button...");
-      await page.getByRole("button", { name: "Download" }).click();
-      await debugScreenshot(page, "7-after-download-click");
+    console.log("Clicking Download button...");
+    await page.getByRole("button", { name: "Download" }).click();
+    await debugScreenshot(page, "7-download-click");
 
-      // Handle the download
-      console.log("Waiting for download...");
-      const download = await downloadPromise;
-      const fileName =
-        download.suggestedFilename() ||
-        `unifi-flows-${new Date().toISOString().slice(0, 10)}.csv`;
-      const filePath = path.join(config.downloadDir, fileName);
+    // Handle the download
+    const download = await downloadPromise;
+    const fileName = `${type || "flows"}-${
+      download.suggestedFilename() || "data.csv"
+    }`;
+    const filePath = path.join(config.downloadDir, fileName);
 
-      if (config.dryRun) {
-        console.log(`[DRY RUN] Would save file as: ${filePath}`);
-        console.log("Dry run completed successfully!");
-      } else {
-        console.log(`Saving file as: ${filePath}`);
-        await download.saveAs(filePath);
-        console.log("Download completed successfully!");
+    if (config.dryRun) {
+      console.log(`[DRY RUN] Would save flows file as: ${filePath}`);
+      console.log("Dry run completed successfully!");
+    } else if (directImportMode && importer) {
+      // In direct import mode, don't save to disk
+      console.log(`Direct import mode enabled for ${type || "flows"} data`);
+
+      try {
+        // Download to a buffer/string instead of saving to disk
+        const downloadPath = await download.path();
+        const csvData = fs.readFileSync(downloadPath);
+
+        // Import directly to InfluxDB
+        console.log(
+          `Importing ${type || "flows"} data directly to InfluxDB...`
+        );
+        const importResults = await importer.importCsvData(
+          csvData,
+          type || "flows"
+        );
+        console.log(`Direct import results: ${JSON.stringify(importResults)}`);
+      } catch (error) {
+        console.error("Error during direct import:", error);
       }
+    } else {
+      console.log(`Saving flows file as: ${filePath}`);
+      await download.saveAs(filePath);
+      console.log("Download completed successfully!");
+    }
+
+    // Close the header after download (as in the codegen recording)
+    try {
+      await page
+        .locator("header")
+        .filter({ hasText: "Download" })
+        .getByTestId("close-button")
+        .click();
+      console.log("Closed download dialog");
     } catch (error) {
-      console.error("Error during download:", error.message);
-      await debugScreenshot(page, "8-download-error");
-      throw error;
+      console.error("Error closing header:", error);
     }
 
     // Optional: Download a second file with different filters (threats)

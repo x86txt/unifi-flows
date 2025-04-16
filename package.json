@@ -1,24 +1,39 @@
 {
   "name": "unifi-flows",
   "version": "1.0.0",
-  "description": "Automated CSV downloader for Unifi Controller Flows data",
+  "description": "Automated CSV downloader for Unifi Controller Flows data with database storage and API",
   "main": "src/unifi-downloader.js",
   "scripts": {
     "start": "bun src/unifi-downloader.js",
     "download": "bun src/unifi-downloader.js",
+    "import": "node src/import.js",
+    "api": "node src/api.js",
+    "start:all": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "unifi",
     "automation",
     "playwright",
-    "csv"
+    "csv",
+    "api",
+    "grafana",
+    "nedb"
   ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
     "dotenv": "^16.4.1",
-    "playwright": "^1.40.0"
+    "express": "^4.18.2",
+    "playwright": "^1.40.0",
+    "uuid": "^11.1.0",
+    "@influxdata/influxdb-client": "^1.33.2",
+    "node-fetch": "^2.6.7",
+    "swagger-ui-express": "^4.6.3",
+    "yamljs": "^0.3.0",
+    "rapidoc": "^9.3.4"
   }
 }

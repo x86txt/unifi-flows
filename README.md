@@ -81,7 +81,7 @@ Configure the script by editing the `.env` file with your:
 ```
 UNIFI_USERNAME=playwright
 UNIFI_PASSWORD=your_password
-UNIFI_URL=https://10.5.22.112
+UNIFI_URL=https://<ip.of.your.unifi.controller.or.cloudkey>
 TIME_RANGE=HOUR
 DOWNLOAD_THREATS=false
 ```
@@ -146,6 +146,168 @@ Then set up a scheduled task to run this batch file.
 - **🔄 Selector Issues**: The script may need updates if Unifi UI changes
 - **🐞 Debug Mode**: Set `HEADLESS=false` and `SLOW_MO=50` in .env to watch the automation in action
 - **🔐 SSL Errors**: For local controllers with self-signed certificates, ensure `IGNORE_HTTPS_ERRORS=true` is set
+
+## 📊 InfluxDB Integration
+
+This project can store data directly in InfluxDB for better performance and direct Grafana integration.
+
+### Quick Start with Docker Compose
+
+The easiest way to get started with the full stack (InfluxDB, Grafana, and optionally the application itself) is to use Docker Compose:
+
+```bash
+# Start the entire stack
+docker-compose up -d
+
+# To also build and run the application in Docker
+docker-compose up -d --build
+```
+
+This will:
+
+1. Start InfluxDB on port 8086
+2. Start Grafana on port 3000
+3. Optionally build and run the application (uncomment the relevant section in docker-compose.yml)
+
+### Manual Setup: InfluxDB with Docker
+
+If you prefer to set up components individually:
+
+```bash
+# Start InfluxDB container
+docker run -d --name influxdb \
+  -p 8086:8086 \
+  -v influxdb-data:/var/lib/influxdb2 \
+  -v influxdb-config:/etc/influxdb2 \
+  -e DOCKER_INFLUXDB_INIT_MODE=setup \
+  -e DOCKER_INFLUXDB_INIT_USERNAME=admin \
+  -e DOCKER_INFLUXDB_INIT_PASSWORD=password123 \
+  -e DOCKER_INFLUXDB_INIT_ORG=unifi-flows \
+  -e DOCKER_INFLUXDB_INIT_BUCKET=network-data \
+  -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token \
+  influxdb:2.7
+
+# To view the UI
+# Visit http://localhost:8086 in your browser
+# Login with admin/password123
+```
+
+### Running in InfluxDB Mode
+
+Set the following in your `.env` file:
+
+```
+USE_INFLUXDB=true
+INFLUXDB_URL=http://localhost:8086
+INFLUXDB_TOKEN=my-super-secret-auth-token
+INFLUXDB_ORG=unifi-flows
+INFLUXDB_BUCKET=network-data
+DIRECT_IMPORT=false
+```
+
+Set `DIRECT_IMPORT=true` to skip saving CSV files and import directly to InfluxDB.
+
+### Setting up Grafana with InfluxDB
+
+1. **Install Grafana**:
+
+   ```bash
+   # Run Grafana container
+   docker run -d --name grafana \
+     -p 3000:3000 \
+     -v grafana-storage:/var/lib/grafana \
+     grafana/grafana:latest
+   ```
+
+2. **Configure InfluxDB Data Source**:
+
+   - Open Grafana at http://localhost:3000 (default login: admin/admin)
+   - Go to Configuration > Data Sources > Add data source
+   - Select InfluxDB
+   - Set URL to `http://influxdb:8086` (or use `http://localhost:8086` if not using Docker networking)
+   - In the Auth section, set your Organization, Token, and Default Bucket
+   - Test connection and Save
+
+3. **Install the Grafana Worldmap Panel**:
+
+   - Go to Configuration > Plugins
+   - Search for "worldmap"
+   - Install the "Worldmap Panel" plugin
+   - Restart Grafana (if needed)
+
+4. **Import the Dashboard**:
+   - Go to Dashboards > Import
+   - Copy the contents of `grafana-dashboard.json` file
+   - Click "Load" and then "Import"
+   - You should now see the Unifi Network Traffic Dashboard with your data
+
+![Grafana Dashboard Preview](assets/dashboard-preview.png)
+
+## 🌎 GeoIP Integration
+
+This project can enrich your network traffic data with geolocation information for better visualization and analysis.
+
+### IP Geolocation Services
+
+The application uses free geolocation APIs to look up IP address information:
+
+1. **Primary: ipapi.co**
+
+   - 30,000 lookups per month
+   - Comprehensive geolocation data
+   - No API key required for basic usage
+
+2. **Secondary (Fallback): ip-api.com**
+   - 45 lookups per minute
+   - Used as fallback if ipapi.co rate limit is reached
+   - No API key required for basic usage
+
+The system implements intelligent caching to minimize API calls:
+
+- In-memory cache for fast lookups
+- File-based cache with 30-day TTL
+- Rate limiting to respect API service limits
+
+### How GeoIP Enrichment Works
+
+The application will:
+
+1. Look up the geographical location of source and destination IP addresses
+2. Add country, city, latitude, longitude, and ISP information to the data
+3. Store this enriched data in InfluxDB
+4. Visualize the traffic on a world map in Grafana
+
+This allows you to:
+
+- See where your network traffic is coming from and going to
+- Identify traffic patterns by country or region
+- Detect unusual connections to unexpected locations
+
+![World Map Visualization](assets/worldmap-preview.png)
+
+## 📄 API Documentation
+
+The project includes a RESTful API with comprehensive documentation:
+
+- **RapiDoc UI**: `/api/docs` - Interactive API documentation with modern UI
+- **Swagger UI**: `/api/docs/swagger` - Traditional Swagger interface
+- **OpenAPI Spec**: `/api/openapi.json` - Raw OpenAPI 3.1.0 specification
+
+### API Endpoints
+
+- **System**: Health check and system status
+- **Flows**: Query network traffic flow data
+- **Threats**: View detected threats
+- **Metrics**: Get traffic metrics and statistics
+- **Import**: Trigger data imports
+
+### Authentication
+
+All protected endpoints require an API key that can be set in your `.env` file:
+
+```
+API_KEY=your-secure-key-here
+```
 
 ## 🎥 Re-recording the Automation
 
