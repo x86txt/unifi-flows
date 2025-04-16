@@ -13,6 +13,12 @@
   <a href="https://github.com/x86txt/unifi-flows/actions/workflows/node-build.yml">
     <img src="https://github.com/x86txt/unifi-flows/actions/workflows/node-build.yml/badge.svg" alt="Node.js Build">
   </a>
+  <a href="#platform-support">
+    <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey" alt="Platform Support">
+  </a>
+  <a href="#prerequisites">
+    <img src="https://img.shields.io/badge/node-22.x-brightgreen" alt="Node.js Version">
+  </a>
 </p>
 
 This project will allow you to export the Traffic Flows (Blocked & Threats) from your Unifi Console to a CSV for ingestion into other platforms - your SIEM, MongoDB to visualize with Grafana, etc.
@@ -30,6 +36,14 @@ This project will allow you to export the Traffic Flows (Blocked & Threats) from
 
 - 🟢 **Built with:** Node.js 22.x and Bun 1.9.x
 - ⚠️ While the script may work with older versions, compatibility is not guaranteed, so beware!
+
+## 🖥️ Platform Support
+
+This tool has been tested and verified to work on:
+
+- **Windows**: Windows 10/11
+- **Linux**: Ubuntu, Debian, CentOS
+- **macOS**: Intel and Apple Silicon
 
 ## 🚀 Installation
 
