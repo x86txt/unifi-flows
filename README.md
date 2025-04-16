@@ -7,7 +7,7 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/x86txt/unifi-flows/actions/workflows/njsscan.yml"><img src="https://github.com/x86txt/unifi-flows/actions/workflows/njsscan.yml/badge.svg" alt="njsscan sast"></a>
+  <a href="https://github.com/x86txt/unifi-flows/actions/workflows/njsscan.yml"><img src="https://github.com/x86txt/unifi-flows/actions/workflows/njsscan.yml/badge.svg" alt="sast scan"></a>
   <a href="https://github.com/x86txt/unifi-flows/actions/workflows/node-build.yml"><img src="https://github.com/x86txt/unifi-flows/actions/workflows/node-build.yml/badge.svg" alt="Node.js Build"></a>
   <a href="#platform-support"><img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey" alt="Platform Support"></a>
   <a href="#prerequisites"><img src="https://img.shields.io/badge/node-22.x-brightgreen" alt="Node.js Version"></a>
@@ -27,7 +27,7 @@ This project will allow you to export the Traffic Flows (Blocked & Threats) from
 ## 📋 Prerequisites
 
 - 🟢 **Built with:** Node.js 22.x and Bun 1.9.x
-- ⚠️ While the script may work with older versions, compatibility is not guaranteed, so beware!
+- ⚠️ While this project is likely to work with older/different versions, compatibility is not guaranteed.
 
 ## 🖥️ Platform Support
 
@@ -36,6 +36,14 @@ This tool has been tested and verified to work on:
 - **Windows**: Windows 10/11
 - **Linux**: Ubuntu, Debian
 - **macOS**: x86, ARM64, Apple M-series
+
+## 🔄 Unifi Network Controller Compatibility
+
+Tested and verified with the following Unifi Network Controller versions:
+
+- **9.1.118**
+
+> ℹ️ The tool may work with other versions, but these are the ones explicitly tested.
 
 ## 🚀 Installation
 
