@@ -25,6 +25,9 @@ const config = {
   // Date range options: "THIRTY_MINUTES", "HOUR", "DAY", "WEEK", "MONTH", "CUSTOM"
   timeRange: process.env.TIME_RANGE || "HOUR",
 
+  // Dry run mode - don't actually download files
+  dryRun: process.env.DRY_RUN === "true" || process.argv.includes("--dry-run"),
+
   // Debugging
   debug: process.env.DEBUG === "true",
 };
@@ -173,10 +176,14 @@ async function downloadUnifiFlowsCsv() {
         `unifi-flows-${new Date().toISOString().slice(0, 10)}.csv`;
       const filePath = path.join(config.downloadDir, fileName);
 
-      console.log(`Saving file as: ${filePath}`);
-      await download.saveAs(filePath);
-
-      console.log("Download completed successfully!");
+      if (config.dryRun) {
+        console.log(`[DRY RUN] Would save file as: ${filePath}`);
+        console.log("Dry run completed successfully!");
+      } else {
+        console.log(`Saving file as: ${filePath}`);
+        await download.saveAs(filePath);
+        console.log("Download completed successfully!");
+      }
     } catch (error) {
       console.error("Error during download:", error.message);
       await debugScreenshot(page, "8-download-error");
@@ -226,10 +233,14 @@ async function downloadUnifiFlowsCsv() {
         }`;
         const filePath2 = path.join(config.downloadDir, fileName2);
 
-        console.log(`Saving threats file as: ${filePath2}`);
-        await download2.saveAs(filePath2);
-
-        console.log("Threats download completed successfully!");
+        if (config.dryRun) {
+          console.log(`[DRY RUN] Would save threats file as: ${filePath2}`);
+          console.log("Threats dry run completed successfully!");
+        } else {
+          console.log(`Saving threats file as: ${filePath2}`);
+          await download2.saveAs(filePath2);
+          console.log("Threats download completed successfully!");
+        }
       } catch (threatsError) {
         console.error("Error downloading threats data:", threatsError.message);
         await debugScreenshot(page, "10-threats-error");

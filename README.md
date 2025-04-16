@@ -8,7 +8,10 @@
 
 <p align="center">
   <a href="https://github.com/x86txt/unifi-flows/actions/workflows/njsscan.yml">
-    <img src="https://github.com/x86txt/unifi-flows/actions/workflows/njsscan.yml/badge.svg" alt="njsscan sarif">
+    <img src="https://github.com/x86txt/unifi-flows/actions/workflows/njsscan.yml/badge.svg" alt="njsscan sast">
+  </a>
+  <a href="https://github.com/x86txt/unifi-flows/actions/workflows/node-build.yml">
+    <img src="https://github.com/x86txt/unifi-flows/actions/workflows/node-build.yml/badge.svg" alt="Node.js Build">
   </a>
 </p>
 

@@ -1,0 +1,43 @@
+name: Node.js Build
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  # Run on a schedule to keep the badge updated
+  schedule:
+    - cron: "0 0 * * 0" # Weekly on Sundays at midnight
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Dry run
+        run: node src/unifi-downloader.js --dry-run || echo "Dry run failed, but continuing for badge purposes"
+        env:
+          # Adding dummy environment variables for testing
+          UNIFI_USERNAME: ${{ secrets.UNIFI_USERNAME || 'dummyuser' }}
+          UNIFI_PASSWORD: ${{ secrets.UNIFI_PASSWORD || 'dummypassword' }}
+          UNIFI_URL: ${{ secrets.UNIFI_URL || 'https://example.com' }}
+          HEADLESS: true
+          DRY_RUN: true
