@@ -1,0 +1,25 @@
+/* Ubiquiti brand colors */
+:root {
+  --ubiquiti-blue: #0559c9; /* Ubiquiti brand blue */
+}
+
+/* Default style for light theme */
+.ubiquiti-logo {
+  color: var(--ubiquiti-blue);
+}
+
+/* Dark theme style */
+@media (prefers-color-scheme: dark) {
+  .ubiquiti-logo {
+    color: white;
+  }
+}
+
+/* GitHub dark theme-specific style */
+html[data-color-mode="dark"] .ubiquiti-logo {
+  color: white;
+}
+
+html[data-color-mode="light"] .ubiquiti-logo {
+  color: var(--ubiquiti-blue);
+}
