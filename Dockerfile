@@ -1,4 +1,4 @@
-FROM oven/bun:1.0 as base
+FROM oven/bun:1.0 AS base
 
 # Create app directory
 WORKDIR /app
