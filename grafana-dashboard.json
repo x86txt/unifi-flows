@@ -479,7 +479,7 @@
     },
     {
       "title": "Global Traffic Sources",
-      "type": "grafana-worldmap-panel",
+      "type": "geomap",
       "id": 7,
       "datasource": {
         "type": "influxdb",
@@ -498,50 +498,67 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "query": "from(bucket: \"network-data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"network_flow\")\n  |> filter(fn: (r) => r._field == \"sourceLatitude\" or r._field == \"sourceLongitude\" or r._field == \"bytes\")\n  |> pivot(rowKey:[\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => r.sourceLatitude != 0 and r.sourceLongitude != 0)\n  |> group(columns: [\"sourceAddress\", \"sourceLatitude\", \"sourceLongitude\"])\n  |> sum()\n  |> rename(columns: {sourceLatitude: \"latitude\", sourceLongitude: \"longitude\", bytes: \"metric\"})\n  |> yield(name: \"sources\")",
+          "query": "from(bucket: \"network-data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"network_flow\")\n  |> filter(fn: (r) => r._field == \"sourceLatitude\" or r._field == \"sourceLongitude\" or r._field == \"bytes\")\n  |> pivot(rowKey:[\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => r.sourceLatitude != 0 and r.sourceLongitude != 0)\n  |> group(columns: [\"sourceAddress\", \"sourceLatitude\", \"sourceLongitude\"])\n  |> sum()\n  |> rename(columns: {sourceLatitude: \"latitude\", sourceLongitude: \"longitude\", bytes: \"value\"})",
           "refId": "A"
         }
       ],
       "options": {
-        "valueName": "current",
-        "showLegend": true,
-        "legendPosition": "right",
-        "mapCenter": "World",
-        "mapCenterLatitude": 0,
-        "mapCenterLongitude": 0,
-        "initialZoom": 1,
-        "maxDataPoints": 1,
-        "mouseWheelZoom": false,
-        "showLabels": false,
-        "scaleDependent": false,
-        "hideEmpty": false,
-        "hideZero": false,
-        "stickyLabels": false,
-        "thresholdLabel": "value",
-        "thresholdLabelOnly": false,
-        "esMetric": "Count",
-        "locationData": "table",
-        "fieldLatitude": "latitude",
-        "fieldLongitude": "longitude",
-        "fieldMetric": "metric",
-        "hideTimeOverride": false,
-        "circleMaxSize": 30,
-        "circleMinSize": 3,
-        "colors": ["green", "yellow", "red"],
-        "clockType": "24 hour",
-        "extendedColorRange": false,
-        "secondaryMetric": "none",
-        "secondaryFieldMetric": "",
-        "circleMaxValue": null,
-        "unitPlural": "bytes",
-        "unitSingular": "byte",
-        "unitSingle": false,
-        "timeField": "time"
+        "basemap": {
+          "name": "dark",
+          "type": "default"
+        },
+        "controls": {
+          "mouseWheelZoom": true,
+          "showAttribution": true,
+          "showDebug": false,
+          "showMeasure": false,
+          "showScale": false,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "name": "Source Traffic",
+            "type": "markers",
+            "config": {
+              "color": {
+                "field": "value",
+                "fixed": "dark-green",
+                "mode": "thresholds"
+              },
+              "fillOpacity": 0.4,
+              "shape": "circle",
+              "showLegend": true,
+              "size": {
+                "field": "value",
+                "fixed": 5,
+                "max": 15,
+                "min": 2,
+                "mode": "scaled"
+              },
+              "textLabel": {
+                "field": "sourceAddress",
+                "mode": "auto"
+              }
+            },
+            "location": {
+              "mode": "auto"
+            }
+          }
+        ],
+        "tooltip": {
+          "mode": "details"
+        },
+        "view": {
+          "id": "zero",
+          "lat": 0,
+          "lon": 0,
+          "zoom": 1
+        }
       }
     },
     {
       "title": "Global Traffic Destinations",
-      "type": "grafana-worldmap-panel",
+      "type": "geomap",
       "id": 8,
       "datasource": {
         "type": "influxdb",
@@ -560,45 +577,62 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "query": "from(bucket: \"network-data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"network_flow\")\n  |> filter(fn: (r) => r._field == \"destLatitude\" or r._field == \"destLongitude\" or r._field == \"bytes\")\n  |> pivot(rowKey:[\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => r.destLatitude != 0 and r.destLongitude != 0)\n  |> group(columns: [\"destinationAddress\", \"destLatitude\", \"destLongitude\"])\n  |> sum()\n  |> rename(columns: {destLatitude: \"latitude\", destLongitude: \"longitude\", bytes: \"metric\"})\n  |> yield(name: \"destinations\")",
+          "query": "from(bucket: \"network-data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"network_flow\")\n  |> filter(fn: (r) => r._field == \"destLatitude\" or r._field == \"destLongitude\" or r._field == \"bytes\")\n  |> pivot(rowKey:[\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => r.destLatitude != 0 and r.destLongitude != 0)\n  |> group(columns: [\"destinationAddress\", \"destLatitude\", \"destLongitude\"])\n  |> sum()\n  |> rename(columns: {destLatitude: \"latitude\", destLongitude: \"longitude\", bytes: \"value\"})",
           "refId": "A"
         }
       ],
       "options": {
-        "valueName": "current",
-        "showLegend": true,
-        "legendPosition": "right",
-        "mapCenter": "World",
-        "mapCenterLatitude": 0,
-        "mapCenterLongitude": 0,
-        "initialZoom": 1,
-        "maxDataPoints": 1,
-        "mouseWheelZoom": false,
-        "showLabels": false,
-        "scaleDependent": false,
-        "hideEmpty": false,
-        "hideZero": false,
-        "stickyLabels": false,
-        "thresholdLabel": "value",
-        "thresholdLabelOnly": false,
-        "esMetric": "Count",
-        "locationData": "table",
-        "fieldLatitude": "latitude",
-        "fieldLongitude": "longitude",
-        "fieldMetric": "metric",
-        "hideTimeOverride": false,
-        "circleMaxSize": 30,
-        "circleMinSize": 3,
-        "colors": ["blue", "purple", "red"],
-        "clockType": "24 hour",
-        "extendedColorRange": false,
-        "secondaryMetric": "none",
-        "secondaryFieldMetric": "",
-        "circleMaxValue": null,
-        "unitPlural": "bytes",
-        "unitSingular": "byte",
-        "unitSingle": false,
-        "timeField": "time"
+        "basemap": {
+          "name": "dark",
+          "type": "default"
+        },
+        "controls": {
+          "mouseWheelZoom": true,
+          "showAttribution": true,
+          "showDebug": false,
+          "showMeasure": false,
+          "showScale": false,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "name": "Destination Traffic",
+            "type": "markers",
+            "config": {
+              "color": {
+                "field": "value",
+                "fixed": "dark-blue",
+                "mode": "thresholds"
+              },
+              "fillOpacity": 0.4,
+              "shape": "circle",
+              "showLegend": true,
+              "size": {
+                "field": "value",
+                "fixed": 5,
+                "max": 15,
+                "min": 2,
+                "mode": "scaled"
+              },
+              "textLabel": {
+                "field": "destinationAddress",
+                "mode": "auto"
+              }
+            },
+            "location": {
+              "mode": "auto"
+            }
+          }
+        ],
+        "tooltip": {
+          "mode": "details"
+        },
+        "view": {
+          "id": "zero",
+          "lat": 0,
+          "lon": 0,
+          "zoom": 1
+        }
       }
     },
     {

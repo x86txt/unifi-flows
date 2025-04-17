@@ -1,4 +1,4 @@
-FROM node:20-slim
+FROM oven/bun:1.0 as base
 
 # Create app directory
 WORKDIR /app
@@ -41,11 +41,11 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies using Bun
+RUN bun install
 
 # Install Playwright browsers
-RUN npx playwright install chromium
+RUN bunx playwright install chromium
 
 # Copy source files
 COPY . .
@@ -56,5 +56,5 @@ RUN mkdir -p downloads data geoip/cache
 # Expose API port (default is 3000, but we'll use 3001 in Docker to avoid conflict with Grafana)
 EXPOSE 3001
 
-# Set the command to run the application
-CMD ["node", "src/index.js"] 
+# Set the command to run the application with Bun
+CMD ["bun", "src/index.js"] 

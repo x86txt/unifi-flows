@@ -105,19 +105,42 @@ Before using this tool, you should create a dedicated user in your Unifi Control
 
 ## 🏃‍♂️ Usage
 
-Run the script with:
+The application can run in two modes:
+
+### Mode 1: CSV Export Mode
+
+This mode downloads CSV files to disk for manual processing or importing into other systems.
 
 ```bash
-# With npm
-npm run start
+# Run the downloader only
+bun run download
 
-# Or with Bun
-bun run start
+# Or use the npm script
+npm run download
+```
+
+### Mode 2: API Server Mode with InfluxDB
+
+This mode runs a complete stack with API server, InfluxDB for storage, and GeoIP enrichment.
+
+```bash
+# Start only the API server (requires InfluxDB running separately)
+bun run api
+
+# Start the complete application (downloader + importer + API server)
+bun run start:all
+
+# Or use Docker Compose to run the entire stack (recommended)
+docker-compose up -d
 ```
 
 ### 🛡️ Downloading Threats Data
 
 Set `DOWNLOAD_THREATS=true` in your `.env` file to also download a second CSV file with threats data.
+
+### ⚡ Direct Import Mode
+
+Set `DIRECT_IMPORT=true` in your `.env` file to skip saving CSV files and import directly to InfluxDB.
 
 ### ⏰ Scheduling
 
@@ -149,6 +172,7 @@ Then set up a scheduled task to run this batch file.
 - **🔄 Selector Issues**: The script may need updates if Unifi UI changes
 - **🐞 Debug Mode**: Set `HEADLESS=false` and `SLOW_MO=50` in .env to watch the automation in action
 - **🔐 SSL Errors**: For local controllers with self-signed certificates, ensure `IGNORE_HTTPS_ERRORS=true` is set
+- **🗺️ Geomap Issues**: If you don't see data on the world map, verify that your data contains valid latitude/longitude coordinates
 
 ## 📊 InfluxDB Integration
 
@@ -171,6 +195,74 @@ This will:
 1. Start InfluxDB on port 8086
 2. Start Grafana on port 3000
 3. Optionally build and run the application (uncomment the relevant section in docker-compose.yml)
+
+## 🔌 Accessing Services
+
+Once the stack is running, you can access the various services at these URLs:
+
+### Grafana Dashboard
+
+- **URL**: http://localhost:3000
+- **Default Credentials**:
+  - Username: `admin`
+  - Password: `admin`
+- **Dashboards**: After logging in, you can import the dashboard from `grafana-dashboard.json`
+
+#### Importing the Dashboard
+
+1. Navigate to http://localhost:3000 and log in with admin/admin
+2. Go to Dashboards → Import
+3. Either:
+   - Upload the `grafana-dashboard.json` file, or
+   - Copy and paste the contents of the file
+4. Select your InfluxDB data source
+5. Click Import
+
+The dashboard includes:
+
+- Network traffic volume over time
+- Top protocols and applications
+- Geographic traffic visualization
+- Threat monitoring panels
+
+#### Connecting Grafana to InfluxDB
+
+⚠️ **Important**: When setting up the InfluxDB data source in Grafana using Docker Compose, use `influxdb:8086` as the URL, not `localhost:8086`. This is because in Docker networking, containers refer to each other by service name.
+
+Configuration steps:
+
+1. In Grafana, go to Configuration → Data Sources → Add data source
+2. Select "InfluxDB"
+3. Use these settings:
+   - URL: `http://influxdb:8086` (must use service name, not localhost)
+   - Query Language: Flux
+   - Organization: unifi-flows
+   - Token: my-super-secret-auth-token
+   - Default Bucket: network-data
+4. Click "Save & Test"
+
+### API Server
+
+- **URL**: http://localhost:3001/api
+- **Documentation**:
+  - RapiDoc UI: http://localhost:3001/api/docs
+  - Swagger UI: http://localhost:3001/api/docs/swagger
+  - OpenAPI Spec: http://localhost:3001/api/openapi.json
+- **Health Check**: http://localhost:3001/api/health
+
+### InfluxDB
+
+- **URL**: http://localhost:8086
+- **Default Credentials**:
+  - URL
+  - Query Language: `Flux`
+  - Username: `admin`
+  - Password: `password123`
+  - Organization: `unifi-flows`
+  - Bucket: `network-data`
+  - Token: `my-super-secret-auth-token`
+
+> **Note**: For production use, you should change all default passwords in the docker-compose.yml and .env files.
 
 ### Manual Setup: InfluxDB with Docker
 
@@ -231,24 +323,19 @@ Set `DIRECT_IMPORT=true` to skip saving CSV files and import directly to InfluxD
    - In the Auth section, set your Organization, Token, and Default Bucket
    - Test connection and Save
 
-3. **Install the Grafana Worldmap Panel**:
-
-   - Go to Configuration > Plugins
-   - Search for "worldmap"
-   - Install the "Worldmap Panel" plugin
-   - Restart Grafana (if needed)
-
-4. **Import the Dashboard**:
+3. **Import the Dashboard**:
    - Go to Dashboards > Import
    - Copy the contents of `grafana-dashboard.json` file
    - Click "Load" and then "Import"
    - You should now see the Unifi Network Traffic Dashboard with your data
 
-![Grafana Dashboard Preview](assets/dashboard-preview.png)
+The dashboard uses Grafana's native Geomap Panel for geographical visualization. No additional plugins are required.
 
-## 🌎 GeoIP Integration
+![Geomap Visualization](assets/geomap-preview.png)
 
-This project can enrich your network traffic data with geolocation information for better visualization and analysis.
+## 🔌 GeoIP Integration
+
+This project can enrich your network traffic data with geolocation information for better visualization and analysis using Grafana's native Geomap Panel.
 
 ### IP Geolocation Services
 
@@ -286,7 +373,7 @@ This allows you to:
 - Identify traffic patterns by country or region
 - Detect unusual connections to unexpected locations
 
-![World Map Visualization](assets/worldmap-preview.png)
+![Geomap Visualization](assets/geomap-preview.png)
 
 ## 📄 API Documentation
 

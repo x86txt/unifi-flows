@@ -33,8 +33,8 @@ async function runDownloader() {
   return new Promise((resolve, reject) => {
     console.log("Starting Unifi CSV downloader...");
 
-    // Use bun or node based on availability
-    const executable = process.env.USE_BUN === "true" ? "bun" : "node";
+    // Always use Bun for running the downloader
+    const executable = "bun";
     const downloaderPath = path.join(__dirname, "unifi-downloader.js");
 
     const downloader = spawn(executable, [downloaderPath], {

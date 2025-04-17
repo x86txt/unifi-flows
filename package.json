@@ -6,9 +6,9 @@
   "scripts": {
     "start": "bun src/unifi-downloader.js",
     "download": "bun src/unifi-downloader.js",
-    "import": "node src/import.js",
-    "api": "node src/api.js",
-    "start:all": "node src/index.js",
+    "import": "bun src/import.js",
+    "api": "bun src/api.js",
+    "start:all": "bun src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
